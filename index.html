@@ -1,0 +1,134 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0 ,maximum-scale=1.0, user-scalable=no ">
+    <title>Too Doo List</title>
+    <link rel="icon" href="Icon.png">
+    <link rel="apple-touch-icon" href="Icon.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="Icon.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="Icon.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="Icon.png">
+    <link rel="rel="shortcut icon"" type="image/png" href="Icon.png"">
+    <span id="styles"></span>
+    <script src="utility.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <script>
+        let tabTask = [];
+        let uuid = location.search;
+        
+
+        function main() {
+            if (uuid == ''){
+                location.href = 'login.html';
+            }
+            else{
+                uuid = uuid.slice(9,-3);
+                receiveData();
+                document.getElementById('styles').innerHTML = '<link rel="stylesheet" href="styles.css">';
+            }
+        }
+
+        function receiveData() {
+            $.ajax({
+                url: 'sendTasks.php',
+                type: 'post',
+                data: {uuid:uuid},
+                success: function (response) {
+                    if (JSON.parse(response) != null){
+                        tabTask = JSON.parse(response);
+                        refreshList();
+                    }
+                }
+            });
+        }
+
+        function sendData() {
+            let data = JSON.stringify(tabTask);
+            $.ajax({
+                url: 'receiveTasks.php',
+                type: 'post',
+                data: { sendedData: data, uuid:uuid},
+                success: function (response) {
+                }
+            });
+        }
+
+        function addATask() {
+            let text = document.getElementById('tbTaskAAjouter').value;
+            if (text.trim() != '') {
+                let tablength = tabTask.length;
+                tabTask.push(
+                    {
+                        name: ConvertToCamel(text),
+                        id: tablength.toString(),
+                        done: "0",
+                    });
+                refreshList();
+                sendData();
+                document.getElementById('tbTaskAAjouter').value = '';
+                document.getElementById('tbTaskAAjouter').focus();
+            }
+        }
+
+        function refreshList() {
+            let checked;
+            document.getElementById('list').innerHTML = '';
+            tabTask.forEach(task => {
+                checked = '';
+                if (task.done == "1") {
+                    checked = 'checked'
+                }
+                document.getElementById('list').innerHTML += '<div id="stask'+task.id+'" class="boxTask"> <input type="checkbox" class="checkboxTask" ' + checked + ' id="task' + task.id + ' " onchange="done(' + task.id + ')">' + '<label id="task' + task.id + '" class="labeltask">' + task.name + '  </label>' + '<button class="sRemoveButton" id="removeTask" onclick="removeATask(' + task.id + ')">-</button>' + '<br></div>';
+            });
+        }
+
+        function done(index) {
+            tabTask[index].done = tabTask[index].done == "0" ? "1" : "0";
+            sendData();
+        }
+
+        function removeATask(index) {
+            tabTask.splice(index, 1);
+            let i = 0;
+            tabTask.forEach(task => {
+                task.id = i;
+                i++;
+            });
+            sendData();
+            refreshList();
+        }
+
+    </script>
+</head>
+
+<body onload="main()">
+    <div id='menubar'>
+        <!--<a id="horaire" href="horaire.jpg">horaire</a>-->
+        <a id="login" href="login.html">login</a>
+    </div>
+    <div id="box">
+        <div id="search">
+            <button class="sAddButton" id="btnAdd" onclick="addATask()">+</button>
+            <input type="text" id="tbTaskAAjouter" maxlength="35">
+        </div>
+
+        <script>
+            var input = document.getElementById("tbTaskAAjouter");
+            input.addEventListener("keyup", function (event) {
+                if (event.keyCode === 13) {
+                    event.preventDefault();
+                    document.getElementById("btnAdd").click();
+                }
+            });
+        </script>
+        <div id="listOfTask">
+            <span id="list"></span>
+        </div>
+    </div>
+</body>
+
+</html>
+
+<!--[{"15ed15bd862d08":[{"name":"Sign Up Syst\u00e8me ","id":0,"done":"0"},{"name":"Finish Style Css","id":1,"done":"1"},{"name":"Find A Job ","id":2,"done":"0"},{"name":"CSS For Desktop Version ","id":3,"done":"0"},{"name":"D\u00e9but Cour D\u2019\u00e9t\u00e9 16 Juin","id":"4","done":"0"}]},{"15ed180db15c8a":[{"name":"Test2","id":0,"done":"1"},{"name":"Test2","id":1,"done":"1"}]},{"15ed1ebf03107f":[]}]-->

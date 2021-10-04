@@ -1,0 +1,45 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Too Doo List</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="login.csss">
+    <script>
+        function signup(){
+            location.href = 'signup.html';
+        }
+
+        function login(){
+            tabInfo = {
+                'Username': document.getElementById("tbUsername").value.toLowerCase(),
+                'Password': document.getElementById("tbPassword").value
+            };
+            data = JSON.stringify(tabInfo)
+            $.get({
+                url: 'login.php',
+                type: 'post',
+                data: { sendedData: data },
+                success: function (response) {
+                    if ("unvalid" != JSON.parse(response))
+                        location.href = 'index.html?uuid='+response;
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <label id="lblUsername">
+        Username:
+        <input type="text"  id="tbUsername">
+        <br>
+    </label>
+    <label id="lblPassword">
+        Password:
+        <input type="password"  id="tbPassword">
+        <br>
+    </label>
+    <button id="idLogin" onclick="login()">login</button>
+    <button id="idSigUp" onclick="signup()">sign up</button>
+</body>
+</html>

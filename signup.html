@@ -1,0 +1,51 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="signup.css">
+    <title>Too Doo List</title>
+    <script>
+        function submit(){
+            tabInfo = {
+                'Username': document.getElementById("tbUsername").value.toLowerCase(),
+                'Password': document.getElementById("tbPassword").value,
+                'Password1': document.getElementById("tbPasswordRedo").value
+            }
+
+            if (tabInfo.Password == tabInfo.Password1 && tabInfo.Username.trim() != '' && tabInfo.Password.trim() != '' && tabInfo.Password1.trim != ''){
+                let data = JSON.stringify(tabInfo);
+                let usernameValid;
+                $.ajax({
+                    url: 'signup.php',
+                    type: 'post',
+                    data: { sendedData: data },
+                    success: function (response) {
+                        if ("valid" == JSON.parse(response))
+                            location.href = 'login.html';
+                    }
+                });
+            }
+
+        }
+    </script>
+</head>
+<body>
+    <label id="lblUsername">
+        Username:
+        <input type="text"  id="tbUsername">
+        <br>
+    </label>
+    <label id="lblPassword">
+        Password:
+        <input type="password"  id="tbPassword">
+        <br>
+    </label>
+    <label id="lblPasswordRedo">
+        Retype Password:
+        <input type="password"  id="tbPasswordRedo">
+        <br>
+    </label>
+    <button id="idSigUp" onclick="submit()">sign up</button>
+</body>
+</html>
